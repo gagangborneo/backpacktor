@@ -1,0 +1,181 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  avatar    String?
+  bio       String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  posts     Post[]
+  categories Category[]
+  travelPlans TravelPlan[]
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  color       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  authorId    String
+  author      User     @relation(fields: [authorId], references: [id])
+  
+  posts       Post[]
+}
+
+model Tag {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  posts     PostTag[]
+}
+
+model Post {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  excerpt     String?
+  content     String?
+  featured    Boolean  @default(false)
+  published   Boolean  @default(false)
+  views       Int      @default(0)
+  likes       Int      @default(0)
+  coverImage  String?
+  location    String?
+  coordinates String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  publishedAt DateTime?
+  
+  authorId    String
+  author      User     @relation(fields: [authorId], references: [id])
+  
+  categoryId  String?
+  category    Category? @relation(fields: [categoryId], references: [id])
+  
+  tags        PostTag[]
+}
+
+model PostTag {
+  id     String @id @default(cuid())
+  postId String
+  tagId  String
+  
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  
+  @@unique([postId, tagId])
+}
+
+model TravelPlan {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String?
+  destination String
+  location    String?
+  coordinates String?
+  startDate   DateTime
+  endDate     DateTime
+  totalBudget Float
+  currency    String   @default("IDR")
+  status      String   @default("planning") // planning, active, completed, cancelled
+  isPublic    Boolean  @default(false)
+  views       Int      @default(0)
+  likes       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  authorId    String
+  author      User     @relation(fields: [authorId], references: [id])
+  
+  categories  TravelCategory[]
+  expenses    Expense[]
+  days        Day[]
+}
+
+model TravelCategory {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  color       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  planId      String
+  plan        TravelPlan @relation(fields: [planId], references: [id])
+  
+  expenses    Expense[]
+}
+
+model Expense {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  amount      Float
+  category    String   // transportation, accommodation, food, activities, shopping, other
+  date        DateTime?
+  isEssential Boolean  @default(true)
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  planId      String
+  plan        TravelPlan @relation(fields: [planId], references: [id])
+  
+  categoryId  String?
+  categoryRef TravelCategory? @relation(fields: [categoryId], references: [id])
+}
+
+model Day {
+  id          String   @id @default(cuid())
+  dayNumber   Int
+  title       String?
+  description String?
+  date        DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  planId      String
+  plan        TravelPlan @relation(fields: [planId], references: [id])
+  
+  activities  Activity[]
+}
+
+model Activity {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  location    String?
+  startTime   DateTime?
+  endTime     DateTime?
+  cost        Float?
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  dayId       String
+  day         Day      @relation(fields: [dayId], references: [id])
+}
