@@ -2,22 +2,25 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import Link from 'next/link'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { 
-  Search, 
-  MapPin, 
-  Eye, 
-  Heart, 
+import {
+  Search,
+  MapPin,
+  Eye,
+  Heart,
   Calendar,
   Filter,
   Grid,
   List,
   Mountain
 } from 'lucide-react'
+import { Navbar } from '@/components/navbar'
 
 interface Post {
   id: string
@@ -44,17 +47,17 @@ interface Post {
 const mockPosts: Post[] = [
   {
     id: '1',
-    title: 'Keindahan Sunrise di Bromo',
-    slug: 'keindahan-sunrise-di-bromo',
-    excerpt: 'Matahari terbit di Gunung Bromo memberikan pemandangan yang memukau dengan langit yang berubah warna dari gelap menjadi jingga hingga cerah. Pengalaman yang tak terlupakan bagi setiap traveler yang datang ke sini.',
+    title: 'Menyusuri Jejak Sunrise di Puncak Gunung Bromo',
+    slug: 'menyusuri-jejak-sunrise-di-puncak-gunung-bromo',
+    excerpt: 'Petualangan seru di tengah malam untuk menyaksikan keindahan matahari terbit dari atas puncak Bromo. Nuansa langit yang berubah warna dari hitam pekat menjadi jingga keemasan memberikan pengalaman spiritual yang tak terlupakan.',
     featured: true,
     published: true,
     views: 1250,
-    likes: 89,
-    coverImage: '/api/placeholder/800/400',
-    location: 'Jawa Timur, Indonesia',
-    createdAt: '2024-01-15T10:30:00Z',
-    publishedAt: '2024-01-15T10:30:00Z',
+    likes: 156,
+    coverImage: 'https://picsum.photos/seed/bromo-mountain-sunrise-landscape/800/400',
+    location: 'Probolinggo, Jawa Timur',
+    createdAt: '2024-10-12T10:30:00Z',
+    publishedAt: '2024-10-12T10:30:00Z',
     category: {
       name: 'Mountain',
       color: 'green'
@@ -62,30 +65,34 @@ const mockPosts: Post[] = [
     tags: [
       { name: 'Indonesia' },
       { name: 'Sunrise' },
-      { name: 'Mountain' }
+      { name: 'Mountain' },
+      { name: 'Adventure' },
+      { name: 'East Java' }
     ]
   },
   {
     id: '2',
-    title: 'Menjelajahi Kota Tua Penang',
-    slug: 'menjelajahi-kota-tua-penang',
-    excerpt: 'Kota tua Penang di Malaysia menyimpan sejuta pesona dan sejarah. Dari arsitektur kolonial hingga kuliner street food yang menggugah selera.',
+    title: 'Keseharian di Pedesaan Ubud yang Masih Asri',
+    slug: 'keseharian-di-pedesaan-ubud-yang-masih-asri',
+    excerpt: 'Tinggal selama seminggu di Ubud membuka mata betapa Bali masih menyimpan pesona otentik di balik hiruk pikuk pariwisata. Dari belajar memasak tradisional dengan ibu-ibu lokal, bersepeda melewati sawah terasering, hingga mengikuti upacara keagamaan di pura desa.',
     featured: false,
     published: true,
-    views: 890,
-    likes: 67,
-    coverImage: '/api/placeholder/800/400',
-    location: 'Penang, Malaysia',
-    createdAt: '2024-01-10T14:20:00Z',
-    publishedAt: '2024-01-10T14:20:00Z',
+    views: 1890,
+    likes: 289,
+    coverImage: 'https://picsum.photos/seed/ubud-rice-terraces-bali-landscape/800/400',
+    location: 'Ubud, Bali',
+    createdAt: '2024-10-05T14:20:00Z',
+    publishedAt: '2024-10-05T14:20:00Z',
     category: {
-      name: 'City',
-      color: 'blue'
+      name: 'Culture',
+      color: 'purple'
     },
     tags: [
-      { name: 'Malaysia' },
-      { name: 'Heritage' },
-      { name: 'Food' }
+      { name: 'Bali' },
+      { name: 'Ubud' },
+      { name: 'Culture' },
+      { name: 'Village Life' },
+      { name: 'Tradition' }
     ]
   },
   {
@@ -97,7 +104,7 @@ const mockPosts: Post[] = [
     published: true,
     views: 1567,
     likes: 120,
-    coverImage: '/api/placeholder/800/400',
+    coverImage: 'https://picsum.photos/seed/ubud-spiritual-retreat-bali-temple-landscape/800/400',
     location: 'Bali, Indonesia',
     createdAt: '2024-01-08T09:15:00Z',
     publishedAt: '2024-01-08T09:15:00Z',
@@ -120,7 +127,7 @@ const mockPosts: Post[] = [
     published: true,
     views: 2100,
     likes: 156,
-    coverImage: '/api/placeholder/800/400',
+    coverImage: 'https://picsum.photos/seed/kuta-beach-bali-sunset-waves-ocean-landscape/800/400',
     location: 'Bali, Indonesia',
     createdAt: '2024-01-05T16:45:00Z',
     publishedAt: '2024-01-05T16:45:00Z',
@@ -143,7 +150,7 @@ const mockPosts: Post[] = [
     published: true,
     views: 3200,
     likes: 245,
-    coverImage: '/api/placeholder/800/400',
+    coverImage: 'https://picsum.photos/seed/komodo-dragon-island-national-park-wildlife-landscape/800/400',
     location: 'Nusa Tenggara Timur, Indonesia',
     createdAt: '2024-01-01T11:20:00Z',
     publishedAt: '2024-01-01T11:20:00Z',
@@ -166,7 +173,7 @@ const mockPosts: Post[] = [
     published: true,
     views: 980,
     likes: 78,
-    coverImage: '/api/placeholder/800/400',
+    coverImage: 'https://picsum.photos/seed/yogyakarta-traditional-food-gudeg-culinary-landscape/800/400',
     location: 'Yogyakarta, Indonesia',
     createdAt: '2023-12-28T13:10:00Z',
     publishedAt: '2023-12-28T13:10:00Z',
@@ -245,27 +252,10 @@ export default function BlogPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50">
-      {/* Header */}
-      <header className="bg-white/80 backdrop-blur-sm border-b border-purple-100">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
-                <Mountain className="h-6 w-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold text-gray-800">Blog</h1>
-                <p className="text-gray-600">Cerita traveling inspiratif dari komunitas Backpacktor</p>
-              </div>
-            </div>
-            <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
-              Tulis Artikel
-            </Button>
-          </div>
-        </div>
-      </header>
+      {/* Navigation */}
+      <Navbar showSearch={true} />
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 pt-20 pb-8 md:pb-0">
         {/* Search and Filter Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -358,8 +348,15 @@ export default function BlogPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
                 >
-                  <Card className="h-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-white/80 backdrop-blur-sm overflow-hidden group">
-                    <div className="h-48 bg-gradient-to-br from-purple-400 to-pink-400 relative overflow-hidden">
+                  <Link href={`/blog/${post.slug}`}>
+                    <Card className="h-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-white/80 backdrop-blur-sm overflow-hidden group cursor-pointer">
+                    <div className="h-48 relative overflow-hidden">
+                      <Image
+                        src={post.coverImage || 'https://picsum.photos/seed/landscape-nature-mountains/800/400'}
+                        alt={post.title}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
                       <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors duration-300"></div>
                       <Badge className="absolute top-4 left-4 bg-yellow-500 text-white">
                         Unggulan
@@ -397,6 +394,7 @@ export default function BlogPage() {
                       </div>
                     </CardContent>
                   </Card>
+                  </Link>
                 </motion.div>
               ))}
             </div>
@@ -431,10 +429,17 @@ export default function BlogPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
                 >
-                  <Card className={`h-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-white/80 backdrop-blur-sm group ${viewMode === 'list' ? 'flex flex-row' : ''}`}>
+                  <Link href={`/blog/${post.slug}`}>
+                    <Card className={`h-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-white/80 backdrop-blur-sm group cursor-pointer ${viewMode === 'list' ? 'flex flex-row' : ''}`}>
                     {viewMode === 'grid' ? (
                       <>
-                        <div className="h-48 bg-gradient-to-br from-purple-400 to-pink-400 rounded-t-lg relative overflow-hidden">
+                        <div className="h-48 rounded-t-lg relative overflow-hidden">
+                          <Image
+                            src={post.coverImage || 'https://picsum.photos/seed/landscape-nature-mountains/800/400'}
+                            alt={post.title}
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
                           {post.featured && (
                             <Badge className="absolute top-4 left-4 bg-yellow-500 text-white">
                               Unggulan
@@ -475,7 +480,13 @@ export default function BlogPage() {
                       </>
                     ) : (
                       <>
-                        <div className="w-32 h-32 bg-gradient-to-br from-purple-400 to-pink-400 flex-shrink-0 relative overflow-hidden">
+                        <div className="w-32 h-32 flex-shrink-0 relative overflow-hidden">
+                          <Image
+                            src={post.coverImage || 'https://picsum.photos/seed/landscape-nature-mountains/800/400'}
+                            alt={post.title}
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
                           {post.featured && (
                             <Badge className="absolute top-2 left-2 bg-yellow-500 text-white">
                               Unggulan
@@ -518,6 +529,7 @@ export default function BlogPage() {
                       </>
                     )}
                   </Card>
+                  </Link>
                 </motion.div>
               ))}
             </div>
